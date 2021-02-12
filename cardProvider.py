@@ -10,7 +10,10 @@ class CardProvider:
         cards = json.loads(json_str)["cards"]
         return cards
 
-    def get_random(self):
+    def get_random(self, tag: str = None):
         cards = self.get_all()
+        if tag != None:
+            cards = [card for card in cards if tag in card["tags"]]
+
         card =  random.choice(cards)
         return card
