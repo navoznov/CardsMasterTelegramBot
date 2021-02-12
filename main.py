@@ -1,3 +1,5 @@
 from cardProvider import CardProvider
 
-cards = CardProvider.get_all()
+card_provider = CardProvider()
+card = card_provider.get_random()
+pass
