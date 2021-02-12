@@ -17,3 +17,12 @@ class CardProvider:
 
         card =  random.choice(cards)
         return card
+
+    def get_all_tags(self):
+        cards = self.get_all()
+        all_tags = []
+        for card in cards:
+            card_tags = card["tags"]
+            all_tags = all_tags + card_tags
+
+        return list(set(all_tags))
