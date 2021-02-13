@@ -1,13 +1,21 @@
 import json
 import random
-
+import os
+from shutil import copyfile
 
 class CardProvider:
+    __CARDS_FILENAME = "cards.json"
+    __DEFAULT_CARDS_FILENAME = "defaultCards.json"
+
     def __init__(self):
         random.seed()
 
+        # если первый запуск и еще нет файла с карточками то копируем дефолтный файл
+        if not os.path.isfile(self.__CARDS_FILENAME):
+            copyfile(self.__DEFAULT_CARDS_FILENAME, self.__CARDS_FILENAME)
+
     def get_all(self):
-        json_str = open("cards.json", encoding="utf-8").read()
+        json_str = open(__CARDS_FILENAME, encoding="utf-8").read()
         cards = json.loads(json_str)["cards"]
         return cards
 
