@@ -15,7 +15,7 @@ class CardProvider:
             copyfile(self.__DEFAULT_CARDS_FILENAME, self.__CARDS_FILENAME)
 
     def get_all(self):
-        json_str = open(__CARDS_FILENAME, encoding="utf-8").read()
+        json_str = open(self.__CARDS_FILENAME, encoding="utf-8").read()
         cards = json.loads(json_str)["cards"]
         return cards
 

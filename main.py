@@ -13,5 +13,3 @@ tags = card_provider.get_all_tags()
 # создаем и запускаем телеграм бота
 bot = TelegramBot(options.telegram_bot_token, card_provider)
 bot.go()
-
-pass
