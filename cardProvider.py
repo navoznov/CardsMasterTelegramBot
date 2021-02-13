@@ -1,6 +1,7 @@
 import json
 import random
 
+
 class CardProvider:
     def __init__(self):
         random.seed()
@@ -15,7 +16,7 @@ class CardProvider:
         if tag != None:
             cards = [card for card in cards if tag in card["tags"]]
 
-        card =  random.choice(cards)
+        card = random.choice(cards)
         return card
 
     def get_all_tags(self):
