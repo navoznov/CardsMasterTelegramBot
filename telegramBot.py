@@ -64,7 +64,7 @@ class TelegramBot:
             card_tag = None if selected_tag == ALL_TAGS_TAG else selected_tag
             card = self.__card_provider.get_random(card_tag)
             card_text = card["text"]
-            reply_keyboard = [["🃏 Вытащить еще одну карту 🃏"], ["♦️♠️ Выбрать колоду ♣️♥️"], ["↗️ Вернуться в главное меню ↗️"]]
+            reply_keyboard = [["Вытащить еще одну карту"], ["Выбрать колоду"], ["Вернуться в главное меню"]]
             markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
             update.message.reply_text(card_text, reply_markup=markup)
             logger.info('Показана цитата "%s"', card_text)
