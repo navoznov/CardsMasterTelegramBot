@@ -16,6 +16,7 @@ from telegram.ext import (
 from telegram.utils.helpers import escape_markdown
 from cardService import CardService
 from card import Card
+import re
 
 
 class TelegramBot:
@@ -23,6 +24,7 @@ class TelegramBot:
     def __init__(self, token: str, card_service: CardService):
         self.__token = token
         self.__card_service = card_service
+
 
 
     def go(self) -> None:
@@ -40,6 +42,8 @@ class TelegramBot:
         # текст кнопки "выбрать все колоды"
         ALL_TAGS_TAG = "! Все !"
 
+        self.__last_selected_tag = ''
+
         def main_menu_state_handler(update: Update, context: CallbackContext) -> int:
             logger.info("Главное меню")
             text = 'Привет. Я карточных дел мастер. Выбери, что мы с тобой будем делать'
@@ -55,12 +59,13 @@ class TelegramBot:
             tags = [ALL_TAGS_TAG] + tags
             reply_keyboard = [[tag] for tag in tags]
             markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-            update.message.reply_text(text, reply_markup=markup)
+            update.message.reply_text(text, reply_markup=markup, reply_to_message_id=update.message.message_id)
             return SELECT_TAG_STATE
 
         def show_card_state_handler(update: Update, context: CallbackContext) -> int:
             user_data = context.user_data
-            selected_tag = update.message.text
+            selected_tag = self.__last_selected_tag if update.message.text == 'Вытащить еще одну карту' else update.message.text
+            self.__last_selected_tag = selected_tag
             logger.info('Выбрана колода "%s"', selected_tag)
             tag = None if selected_tag == ALL_TAGS_TAG else selected_tag
             card = self.__card_service.get_random_card(tag)
@@ -71,20 +76,21 @@ class TelegramBot:
                 country_text = f'{card.country} ' if card.country else ''
                 title_text = author_text + country_text
                 result+= f'* {title_text} *\n\n' if title_text else ''
-                result+= card.text
+                # result+= card.text.replace('.', r'\.')
+                result+= re.escape(card.text)
                 return result
 
             reply_text = get_card_message_text(card)
             reply_keyboard = [["Вытащить еще одну карту"], ["Выбрать колоду"], ["Вернуться в главное меню"]]
             markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-            update.message.reply_text(reply_text, reply_markup=markup, parse_mode='MarkdownV2')
+            update.message.reply_text(reply_text, reply_markup=markup, parse_mode='MarkdownV2', reply_to_message_id=update.message.message_id)
             logger.info('Показана цитата "%s"', card.text)
             return SHOW_CARD_STATE
 
         def cancel(update: Update, context: CallbackContext) -> int:
             logger.info("Отмена")
             text = 'Bye! I hope we can talk again some day.'
-            update.message.reply_text(text, reply_markup=ReplyKeyboardRemove())
+            update.message.reply_text(text, reply_markup=ReplyKeyboardRemove(), reply_to_message_id=update.message.message_id)
             return ConversationHandler.END
 
         conv_handler = ConversationHandler(
