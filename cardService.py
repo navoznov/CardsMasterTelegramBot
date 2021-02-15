@@ -18,8 +18,7 @@ class CardService:
         if tag != None:
             cards = [card for card in cards if tag == card.tag]
 
-        card = random.choice(cards)
-        return card
+        return random.choice(cards) if len(cards) > 0 else None
 
     def get_all_tags(self):
         cards = self.__card_repository.get_all()
