@@ -8,7 +8,7 @@ class CardRepository:
 		if not os.path.isfile(db_filename):
 			self.__create_db()
 
-	def get_all(self):
+	def get_all(self) -> list(Card):
 		connection = self.__create_connection()
 		cursor = connection.cursor()
 		cursor.row_factory = self.__dict_factory
@@ -19,7 +19,7 @@ class CardRepository:
 		cards = [Card.from_dict(x) for x in result]
 		return cards
 
-	def get_by_tag(self, tag: str):
+	def get_by_tag(self, tag: str) -> list(Card):
 		connection = self.__create_connection()
 		cursor = connection.cursor()
 		cursor.row_factory = self.__dict_factory
