@@ -15,13 +15,14 @@ from telegram.ext import (
 )
 from telegram.utils.helpers import escape_markdown
 from cardProvider import CardProvider
+from cardService import CardService
 
 
 class TelegramBot:
 
-    def __init__(self, token: str, card_provider: CardProvider):
+    def __init__(self, token: str, card_service: CardService):
         self.__token = token
-        self.__card_provider = card_provider
+        self.__card_service = card_service
 
 
     def go(self) -> None:
@@ -50,7 +51,7 @@ class TelegramBot:
         def select_tag_state_handler(update: Update, context: CallbackContext) -> int:
             text = 'Выбери колоду или "Все", если хочешь смешать все колоды',
             logger.info("Выбрать колоду")
-            tags = self.__card_provider.get_all_tags()
+            tags = self.__card_service.get_all_tags()
             tags = [ALL_TAGS_TAG] + tags
             reply_keyboard = [[tag] for tag in tags]
             markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
@@ -62,7 +63,7 @@ class TelegramBot:
             selected_tag = update.message.text
             logger.info('Выбрана колода "%s"', selected_tag)
             card_tag = None if selected_tag == ALL_TAGS_TAG else selected_tag
-            card = self.__card_provider.get_random(card_tag)
+            card = self.__card_service.get_random(card_tag)
             card_text = card["text"]
             reply_keyboard = [["Вытащить еще одну карту"], ["Выбрать колоду"], ["Вернуться в главное меню"]]
             markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
@@ -105,10 +106,10 @@ class TelegramBot:
             query = update.inline_query.query
             logger.info('Inline query "%s"', query)
 
-            all_tags = self.__card_provider.get_all_tags() + [None]
+            all_tags = self.__card_service.get_all_tags() + [None]
 
             def get_inline_query_result_for_tag(tag):
-                card = self.__card_provider.get_random(tag)
+                card = self.__card_service.get_random(tag)
                 text = card["text"]
                 title = ALL_TAGS_TAG if tag == None else tag
                 return InlineQueryResultArticle(id=uuid4(), title=title, input_message_content=InputTextMessageContent(text))
