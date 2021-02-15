@@ -24,3 +24,6 @@ class CardService:
         cards = self.__card_repository.get_all()
         all_tags = [card.tag for card in cards]
         return list(set(all_tags))
+
+    def save_new_card(self, card: Card) -> int:
+        return self.__card_repository.add(card)
