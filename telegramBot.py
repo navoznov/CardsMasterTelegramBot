@@ -70,7 +70,7 @@ class TelegramBot:
             tag = None if selected_tag == ALL_TAGS_TAG else selected_tag
             card = self.__card_service.get_random_card(tag)
 
-            def get_card_message_text(card: Card):
+            def get_markdownV2_card_message_text(card: Card):
                 result = ''
                 author_text = f'{card.author} ' if card.author else ''
                 country_text = f'{card.country} ' if card.country else ''
@@ -80,10 +80,20 @@ class TelegramBot:
                 result+= re.escape(card.text)
                 return result
 
-            reply_text = get_card_message_text(card)
+            def get_plaintext_card_message_text(card: Card):
+                result = ''
+                author_text = f'{card.author} ' if card.author else ''
+                country_text = f'{card.country} ' if card.country else ''
+                title_text = author_text + country_text
+                result+= f'{title_text}\n\n' if title_text else ''
+                result+= card.text
+                return result
+
+            reply_text = get_plaintext_card_message_text(card)
             reply_keyboard = [["Вытащить еще одну карту"], ["Выбрать колоду"], ["Вернуться в главное меню"]]
             markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-            update.message.reply_text(reply_text, reply_markup=markup, parse_mode='MarkdownV2', reply_to_message_id=update.message.message_id)
+            update.message.reply_text(reply_text, reply_markup=markup, reply_to_message_id=update.message.message_id)
+            # update.message.reply_text(reply_text, reply_markup=markup, parse_mode='MarkdownV2', reply_to_message_id=update.message.message_id)
             logger.info('Показана цитата "%s"', card.text)
             return SHOW_CARD_STATE
 
