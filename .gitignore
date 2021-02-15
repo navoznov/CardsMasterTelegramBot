@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 cards.json
 .vscode/launch.json
+cards_db.db
