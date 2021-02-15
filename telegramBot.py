@@ -15,6 +15,7 @@ from telegram.ext import (
 )
 from telegram.utils.helpers import escape_markdown
 from cardService import CardService
+from card import Card
 
 
 class TelegramBot:
@@ -63,9 +64,20 @@ class TelegramBot:
             logger.info('Выбрана колода "%s"', selected_tag)
             tag = None if selected_tag == ALL_TAGS_TAG else selected_tag
             card = self.__card_service.get_random_card(tag)
+
+            def get_card_message_text(card: Card):
+                result = ''
+                author_text = f'{card.author} ' if card.author else ''
+                country_text = f'{card.country} ' if card.country else ''
+                title_text = author_text + country_text
+                result+= f'* {title_text} *\n\n' if title_text else ''
+                result+= card.text
+                return result
+
+            reply_text = get_card_message_text(card)
             reply_keyboard = [["Вытащить еще одну карту"], ["Выбрать колоду"], ["Вернуться в главное меню"]]
             markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-            update.message.reply_text(card.text, reply_markup=markup)
+            update.message.reply_text(reply_text, reply_markup=markup, parse_mode='MarkdownV2')
             logger.info('Показана цитата "%s"', card.text)
             return SHOW_CARD_STATE
 
