@@ -13,7 +13,7 @@ class CardService:
     def get_by_tag(self, tag: str):
         return self.__card_repository.get_by_tag(tag)
 
-    def get_random(self, tag: str = None) -> Card:
+    def get_random_card(self, tag: str = None) -> Card:
         cards = self.__card_repository.get_all()
         if tag != None:
             cards = [card for card in cards if tag == card.tag]

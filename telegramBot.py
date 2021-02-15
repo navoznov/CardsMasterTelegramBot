@@ -61,8 +61,8 @@ class TelegramBot:
             user_data = context.user_data
             selected_tag = update.message.text
             logger.info('Выбрана колода "%s"', selected_tag)
-            card_tag = None if selected_tag == ALL_TAGS_TAG else selected_tag
-            card = self.__card_service.get_random(card_tag)
+            tag = None if selected_tag == ALL_TAGS_TAG else selected_tag
+            card = self.__card_service.get_random_card(tag)
             reply_keyboard = [["Вытащить еще одну карту"], ["Выбрать колоду"], ["Вернуться в главное меню"]]
             markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
             update.message.reply_text(card.text, reply_markup=markup)
