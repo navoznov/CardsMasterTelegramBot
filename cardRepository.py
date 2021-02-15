@@ -1,6 +1,6 @@
 import sqlite3
 import os
-
+from card import Card
 
 class CardRepository:
 	def __init__(self, db_filename: str = "cards_db.db"):
@@ -16,24 +16,29 @@ class CardRepository:
 		cursor.execute(sql)
 		result = cursor.fetchall()
 		connection.close()
-		return result
+		cards = [Card.from_dict(x) for x in result]
+		return cards
 
 	def get_by_tag(self, tag: str):
 		connection = self.__create_connection()
 		cursor = connection.cursor()
+		cursor.row_factory = self.__dict_factory
 		sql = 'SELECT * FROM Cards WHERE Tag=:Tag'
 		cursor.execute(sql, {"Tag": tag})
 		result = cursor.fetchall()
 		connection.close()
-		return result
+		cards = [Card.from_dict(x) for x in result]
+		return cards
 
-	def add(self, card: dict) -> None:
+	def add(self, card: dict) -> int:
 		connection = self.__create_connection()
 		cursor = connection.cursor()
-		sql = "insert into Cards (Tag, Author, Text, Country) values (:Tag, :Author, :Text, :Country)"
+		sql = "insert into Cards (Tag, Author, Text, Country) values (:tag, :author, :text, :country)"
 		cursor.execute(sql, card)
+		id = cursor.lastrowid
 		connection.commit()
 		connection.close()
+		return id
 
 	def __create_connection(self):
 		connection = None
@@ -81,5 +86,7 @@ class CardRepository:
 	def __dict_factory(cursor, row):
 		d = {}
 		for idx, col in enumerate(cursor.description):
-			d[col[0]] = row[idx]
+			name = col[0]
+			lower_name = name.lower()
+			d[lower_name] = row[idx]
 		return d
