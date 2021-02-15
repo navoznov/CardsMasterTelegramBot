@@ -30,11 +30,12 @@ class CardRepository:
 		cards = [Card.from_dict(x) for x in result]
 		return cards
 
-	def add(self, card: dict) -> int:
+	def add(self, card: Card) -> int:
 		connection = self.__create_connection()
 		cursor = connection.cursor()
 		sql = "insert into Cards (Tag, Author, Text, Country) values (:tag, :author, :text, :country)"
-		cursor.execute(sql, card)
+		card_dict = vars(card)
+		cursor.execute(sql, card_dict)
 		id = cursor.lastrowid
 		connection.commit()
 		connection.close()
