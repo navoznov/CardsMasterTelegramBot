@@ -14,7 +14,6 @@ from telegram.ext import (
     InlineQueryHandler
 )
 from telegram.utils.helpers import escape_markdown
-from cardProvider import CardProvider
 from cardService import CardService
 
 
@@ -64,11 +63,10 @@ class TelegramBot:
             logger.info('Выбрана колода "%s"', selected_tag)
             card_tag = None if selected_tag == ALL_TAGS_TAG else selected_tag
             card = self.__card_service.get_random(card_tag)
-            card_text = card["text"]
             reply_keyboard = [["Вытащить еще одну карту"], ["Выбрать колоду"], ["Вернуться в главное меню"]]
             markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-            update.message.reply_text(card_text, reply_markup=markup)
-            logger.info('Показана цитата "%s"', card_text)
+            update.message.reply_text(card.text, reply_markup=markup)
+            logger.info('Показана цитата "%s"', card.text)
             return SHOW_CARD_STATE
 
         def cancel(update: Update, context: CallbackContext) -> int:
@@ -110,9 +108,8 @@ class TelegramBot:
 
             def get_inline_query_result_for_tag(tag):
                 card = self.__card_service.get_random(tag)
-                text = card["text"]
                 title = ALL_TAGS_TAG if tag == None else tag
-                return InlineQueryResultArticle(id=uuid4(), title=title, input_message_content=InputTextMessageContent(text))
+                return InlineQueryResultArticle(id=uuid4(), title=title, input_message_content=InputTextMessageContent(card.text))
 
             results = [get_inline_query_result_for_tag(tag) for tag in all_tags]
             update.inline_query.answer(results)
