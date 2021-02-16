@@ -52,8 +52,8 @@ class TelegramBot:
             logger.info("Главное меню")
             text = 'Привет. Я карточных дел мастер. Выбери, что мы с тобой будем делать'
             reply_keyboard = [['Вытянуть карточку'], ['Добавить карточку'], ['Список всех карточек']]
-            markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-            update.message.reply_text(text, reply_markup=markup)
+            keyboard_markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+            update.message.reply_text(text, reply_markup=keyboard_markup)
             return MAIN_MENU_STATE
 
         def select_tag_state_handler(update: Update, context: CallbackContext) -> int:
@@ -62,8 +62,8 @@ class TelegramBot:
             tags = self.__card_service.get_all_tags()
             tags = [ALL_TAGS_TAG] + tags
             reply_keyboard = [[tag] for tag in tags]
-            markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-            update.message.reply_text(text, reply_markup=markup, reply_to_message_id=update.message.message_id)
+            keyboard_markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+            update.message.reply_text(text, reply_markup=keyboard_markup, reply_to_message_id=update.message.message_id)
             return SELECT_TAG_STATE
 
         def show_card_state_handler(update: Update, context: CallbackContext) -> int:
@@ -123,8 +123,8 @@ class TelegramBot:
             logger.info("Ввод названия колоды")
             tags = self.__card_service.get_all_tags()
             reply_keyboard = [[tag] for tag in tags]
-            markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-            update.message.reply_text(text, reply_markup=markup, reply_to_message_id=update.message.message_id)
+            keyboard_markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+            update.message.reply_text(text, reply_markup=keyboard_markup, reply_to_message_id=update.message.message_id)
             return ADD_CARD_TAG_STATE
 
         def add_card_author_state_handler(update: Update, context: CallbackContext) -> int:
@@ -140,11 +140,13 @@ class TelegramBot:
 
             text = 'Введите страну (если хотите)'
             logger.info("Ввод страны цитаты")
-            update.message.reply_text(text, reply_markup=ReplyKeyboardRemove(), reply_to_message_id=update.message.message_id)
+            reply_keyboard = [['Пропустить этот шаг']]
+            keyboard_markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+            update.message.reply_text(text, reply_markup=keyboard_markup, reply_to_message_id=update.message.message_id)
             return ADD_CARD_COUNTRY_STATE
 
         def card_saved_state_handler(update: Update, context: CallbackContext) -> int:
-            self.__card_country = update.message.text
+            self.__card_country = '' if update.message.text == "Пропустить этот шаг" else update.message.text
             card = Card(self.__card_text, self.__card_tag, self.__card_author, self.__card_country)
             card_id = self.__card_service.save_new_card(card)
             card.id = card_id
@@ -155,8 +157,8 @@ class TelegramBot:
             text = 'Цитата сохранена'
             logger.info("Цитата сохранена")
             reply_keyboard = [['Посмотреть карточку сохраненной цитаты'], ['Вернуться в главное меню']]
-            markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-            update.message.reply_text(text, reply_markup=markup)
+            keyboard_markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+            update.message.reply_text(text, reply_markup=keyboard_markup)
 
             # update.message.reply_text(text, reply_markup=markup, reply_to_message_id=update.message.message_id)
             return CARD_SAVED_STATE
