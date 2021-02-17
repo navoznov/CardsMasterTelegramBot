@@ -6,7 +6,7 @@ from cardRepository import CardRepository
 from card import Card
 
 options = OptionsParser.parse()
-card_repository = CardRepository('cards1.db')
+card_repository = CardRepository()
 card_service = CardService(card_repository)
 bot = TelegramBot(options.telegram_bot_token, card_service)
 bot.go()
