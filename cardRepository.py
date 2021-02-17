@@ -80,7 +80,8 @@ class CardRepository:
 			{"tag": "Экономика", "author": "Г. Форд", "text": "Не работодатель выдает зарплату, работодатель только распределяет деньги. Зарплату выдает клиент.", "country": "" },
 			{"tag": "Культура", "author": "Н. Арутюнян", "text": "Все носят невидимые очки, стекла которых сварены из услышанных или прочитанных слов, идей и мнений. Никто не свободен от очков.", "country": "" }
 		]
-		for	card in default_cards:
+		for	card_dict in default_cards:
+			card = Card.from_dict(card_dict)
 			self.add(card)
 
 	@staticmethod
