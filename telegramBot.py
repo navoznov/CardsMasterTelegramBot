@@ -223,7 +223,7 @@ class TelegramBot:
             all_tags = self.__card_service.get_all_tags() + [None]
 
             def get_inline_query_result_for_tag(tag):
-                card = self.__card_service.get_random(tag)
+                card = self.__card_service.get_random_card(tag)
                 title = ALL_TAGS_TAG if tag == None else tag
                 return InlineQueryResultArticle(id=uuid4(), title=title, input_message_content=InputTextMessageContent(card.text))
 
